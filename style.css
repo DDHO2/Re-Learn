@@ -1,0 +1,61 @@
+:root {
+    --shadow: #bdbdbd;
+    --background: #ffffff;
+  }
+
+  .jdfslk {
+      background:   linear-gradient(#e3e3e3, rgb(202, 219, 255))
+  }
+
+  .background{
+    background: var(--background);
+    background-color: var(--background);
+  }
+
+  body{
+      font-family: 'Arial';
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    }
+
+.leftbar {
+    font-family: Arial;
+}
+
+.logo {
+    letter-spacing: 2px;
+    font-weight: 700;
+    font-size: 4vh;
+    font-family:Arial!important;
+}
+
+.nobox {
+    background: transparent!important; 
+    box-shadow: none!important;
+}
+
+.invalidcode {
+    background-color:rgb(240, 137, 137);
+    border: 1px 1px 1px 1px rgb(161, 3, 3);
+}
+
+.learningmodes {
+    list-style: none;
+}
+
+.topbox {
+    background-color: transparent!important; 
+    border-bottom: 1px solid #d1d1d1;
+    text-decoration: none!important;
+}
+
+.menuItem {
+    text-decoration: none;
+}
+a{
+    text-decoration: none;
+}

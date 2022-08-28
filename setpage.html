@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Playfair Display' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+    <div id="app">
+        
+        <v-app>
+            <v-main>
+                <v-container fluid class="fill-height background" style="width:100vw;">
+                    <v-app-bar
+                        elevation="0" class="topbox" 
+                        >
+                        <h1><a href="index.html" class="logo" style="text-decoration: none;">RE:LEARN</a></h1>
+                        <v-spacer></v-spacer>
+                        
+                        <v-btn rounded style="background-color: #f1f1f1;" @click="locationChange('create.html')">
+                            <a href="create.html" style="text-decoration: none;">Create</a>
+                        </v-btn>
+                        <v-btn rounded style="background-color: #f1f1f1; margin-left: 10px;" @click="locationChange('edit.html')">
+                            <a href="edit.html">Edit</a>
+                        </v-btn>
+                    </v-app-bar>
+                    <v-row style="height: 80vh;">
+                        <v-col md="3" class="leftbar">
+                            <v-col offset-md="1" md="6">
+                                <v-row style="height: 10vh;"></v-row>
+                                <v-row style="height: 20vh;">
+                                    <p style="font-size: 4vw; margin-bottom: -3vh;"><strong>{{ setdata.title}}</strong></p>
+                                </v-row>
+                                <v-row style="width: 100%;">
+                                    <h3>Learning Modes:</h3>
+                                    <p></p>
+                                    <ul>
+                                        <li>
+                                            <v-btn
+                                            elevation="0"
+                                            large
+                                            block
+                                            @click="challengeMode"
+                                            >
+                                            Select Challenge
+                                            </v-btn>
+                                            <p></p>
+                                            <v-btn
+                                            elevation="0"
+                                            large
+                                            block
+                                            @click="textMode"
+                                            >
+                                            Text Challenge
+                                            </v-btn>
+                                        </li>
+                                        <li>
+                                            
+                                        </li>
+                                    </ul>
+                                </v-row>
+                            </v-col>
+                            
+                        </v-col>
+                        <v-col md="8">
+                            <v-row style="height: 10vh;"></v-row>
+                            <v-card class="nobox">
+                                <v-card-title>
+                                  <v-text-field
+                                    v-model="search"
+                                    append-icon="mdi-magnify"
+                                    label="Search"
+                                    single-line
+                                    hide-details
+                                  ></v-text-field>
+                                </v-card-title>
+                                <v-data-table
+                                  :headers="headers"
+                                  :items="deck"
+                                  :search="search"
+                                  style="background: transparent;"
+                                ></v-data-table>
+                              </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+        </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.4/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+        data: {
+            search: "",
+            code: "",
+            headers: [
+                { text: 'Key', value: 'id' },
+                { text: 'Value', value: 'value'}
+            ],
+            deck: [{
+
+            }],
+          setdata: [
+            {
+            }
+          ]
+        },
+      mounted: function(){
+        const params = new URLSearchParams(document.location.search);
+        const data = params.get('code');
+        this.code = data;
+        const url = `https://re-learn-server.dho6342568911.repl.co/get?code=${data}`;
+        console.log(url)
+        fetch(url).then(response => {
+    return response.json()}).then(
+        data => {
+            console.log(data)
+            if (data["error"] == "error"){
+                location.href="error.html"
+            }
+            this.setdata = data;
+            this.deck = data["deck"];
+            document.body.style.opacity = 1;
+        }
+    )
+
+      },
+      methods: {
+        locationChange(href){
+            location.href=href
+          },
+        challengeMode: function(){
+            location.href=`challenge.html?code=${this.code}`;
+        },
+        textMode: function(){
+            location.href = `textchallenge.html?code=${this.code}`
+        }
+        }
+      })
+  </script>
+
+  <style>
+      body {
+          opacity: 0;
+      }
+      a {
+          color:black !important;
+          font-family: serif;
+      }
+  </style>
+
+</body>
+
+</html>

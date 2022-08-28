@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Playfair Display' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+    <div id="app">
+        
+        <v-app>
+            <v-main>
+                <v-container fluid class="fill-height background" style="width:100vw;">
+                    <v-app-bar
+                        elevation="0" class="topbox"
+                    >
+                        <h1><a href="index.html" class="logo">RE:LEARN</a></h1>
+                        <v-spacer></v-spacer>
+                        
+                        <v-btn rounded style="background-color: #f1f1f1;" @click="locationChange('create.html')">
+                            <a href="create.html">Create</a>
+                        </v-btn>
+                        <v-btn rounded style="background-color: #f1f1f1; margin-left: 10px;" @click="locationChange('edit.html')">
+                            <a href="edit.html">Edit</a>
+                        </v-btn>
+                    </v-app-bar>
+                    <v-row justify="center">
+                        <h3>Set has been created. Your code is:</h3>
+                    </v-row>
+                    <v-row style="height: 50vh;" justify="center" align="center">
+                        <h1 justify style="font-size: 30vh;">
+                            {{ code }}
+                        </h1>
+                    </v-row>
+                    <v-row style="height: 30vh;">
+                        <v-col md="4" offset-md="4">
+                            <v-row align="center" justify="center" >
+                                <v-col md='4'>
+                                    <v-btn @click="copy" block>Copy Code</v-btn>
+                                    <p></p>
+                                    <v-btn @click="find" block>
+                                        Return Home
+                                    </v-btn>
+                                </v-col>
+                            </v-row>    
+                            
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+        </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.4/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+        data: {
+            code: ""
+        },
+      mounted: function(){
+        const params = new URLSearchParams(document.location.search);
+        const data = params.get('code');
+        this.code = data
+      },
+      methods: {
+        locationChange(href){
+            location.href=href
+          },
+           find: function(){
+            location.href=`index.html`;
+           },
+           copy: function(){
+            navigator.clipboard.writeText(this.code);
+           }
+        }
+      })
+  </script>
+
+  <style>
+      a {
+          color:black !important;
+          font-family: serif;
+          text-decoration: none;
+      }
+  </style>
+
+</body>
+
+</html>

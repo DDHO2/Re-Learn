@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Playfair Display' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+    <div id="app">
+        
+        <v-app>
+            <v-main>
+                <v-container fluid class="fill-height background" style="width:100vw;">
+                    <v-app-bar
+                    elevation="0" class="topbox"
+                        >
+                        <h1><a href="index.html" style="text-decoration: none;" class="logo">RE:LEARN</a></h1>
+                        <v-spacer></v-spacer>
+                        <v-btn rounded style="background-color: #f1f1f1; margin-left: 10px;" @click="locationChange('edit.html')">
+                            <a>Edit</a>
+                        </v-btn>
+                    </v-app-bar>
+                    <v-row style="height: 80vh;">
+                        <v-col offset-md="0" md="3" align="left" class="leftbar" style="border-right: 1px solid #d1d1d1">
+                            <v-row style="height: 10vh;">
+                                <v-col offset-md="2" md="9">
+                                    <h1 style="font-size: 5vw;" class="text-center">Create</h1>
+                                </v-col>
+                            </v-row>
+                            <v-row style="height:5vh"></v-row>
+                            <v-row>
+                                <v-col offset-md="2" md="9">
+                                    <v-text-field v-model="title" placeholder="Title">
+                                    </v-text-field>
+                                    <v-text-field v-model="code" placeholder="Code" :class="{ invalidcode: invalid}">
+                                    </v-text-field>
+                                    <v-text-field v-model="pass" placeholder="Password">
+                                    </v-text-field>
+                                    <v-text-field v-model="email" placeholder="Email(optional)">
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col offset-md="2" md="9">
+                                    <v-btn rounded block style="background-color: #f1f1f1;" @click="create" large>
+                                        <a>Create</a>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+
+                        </v-col>
+                        <v-col md="9">
+                                <table>
+                                    <tbody>
+                                        <tr v-for="(key, index) in datas">
+                                            <td>        
+                                                <v-text-field v-model="key.id" placeholder="Key" id="k" style="margin-right: 3vh;">
+                                                </v-text-field>
+                                            </td>
+                                            <td>        
+                                                <v-text-field @keyup.enter="addData" v-model="key.value" placeholder="Value" style="width: 40vh;">
+                                                </v-text-field>
+                                            </td>
+                                            <td>
+                                                <v-btn floating 
+                                                class="mx-2"
+                                                fab
+                                                dark
+                                                small
+                                                color="primary"
+                                                style="box-shadow: none; background-color: transparent!important; color: black;"
+                                                @click="deletedata(index)"
+                                                :disabled="dis">
+                                                    <v-icon>
+                                                        mdi-delete
+                                                    </v-icon>
+                                                </v-btn>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                        </v-col>
+                </v-container>
+            </v-main>
+        </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.4/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+        data: {
+            dis: true,
+            badcode:false,
+            title:"",
+            code:"",
+            email:"",
+            pass:"",
+            creator:"guest",
+            invalid: false,
+            id:[],
+            value:[],
+            datas: [{ id: '', value: ''}]
+        },
+      mounted: function(){
+      },
+      methods: {
+          locationChange(href){
+            location.href=href
+          },
+        addData: function () {
+            this.datas.unshift({ id: '',value:'' });
+            document.getElementById('k').focus();
+            if (this.datas.length > 1){
+                this.dis = false;
+            }
+        },
+        deletedata: function (index){
+            this.datas.splice(index, 1)
+            if (this.datas.length = 1){
+                this.dis = false;
+            }
+        },
+        create: function () {
+            fetch(`https://re-learn-server.dho6342568911.repl.co/codecheck?code=${this.code}`,{
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }).then(response => response.json()).then(
+                data => {
+                    if (!data["available"]){
+                        this.invalid = true;
+                        return;
+                    }
+                }
+            ).catch(e => {
+                console.log(e)
+            })
+            const data = {
+                "title": this.title,
+                "code": this.code,
+                "creator": this.creator,
+                "deck": this.datas,
+                "pass": this.pass,
+                "email": this.email
+            }
+            fetch('https://re-learn-server.dho6342568911.repl.co/post', {
+                method: 'POST',
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+                }).then(response => response.json()).then(data => {
+                    console.log(data)
+                    location.href=`completed.html?code=${this.code}`
+                })
+            }
+            
+        }   
+      })
+  </script>
+
+  <style>
+      a {
+          color:black !important;
+          text-decoration: none;
+          font-family: serif;
+      }
+  </style>
+
+</body>
+
+</html>

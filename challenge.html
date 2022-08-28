@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Playfair Display' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+    <div id="app">
+        
+        <v-app>
+            <v-main>
+                <v-container fluid class="fill-height background" style="width:100vw;">
+                    <v-app-bar
+                        elevation="0" class="topbox"
+                        >
+                        <h1><a href="index.html" class="logo">RE:LEARN</a></h1>
+                        <v-spacer></v-spacer>
+                        
+                        <v-btn rounded style="background-color: #f1f1f1;" @click="locationChange('create.html')">
+                            <a href="create.html">Create</a>
+                        </v-btn>
+                        <v-btn rounded style="background-color: #f1f1f1; margin-left: 10px;" @click="locationChange('edit.html')">
+                            <a href="edit.html">Edit</a>
+                        </v-btn>
+                    </v-app-bar>
+                    <v-row style="height: 80vh;">
+                        <v-col md="3" class="leftbar">
+                            <v-col offset-md="1" md="6">
+                                <v-row style="height: 10vh;"></v-row>
+                                <v-row style="height: 20vh;">
+                                    <p style="font-size: 4vw; margin-bottom: -3vh;"><strong>{{ setdata.title}}</strong></p>
+                                </v-row>
+                                <v-row>
+                                    <v-container fluid>
+                                        <v-row align="center">
+                                        </v-row>
+                                    </v-container>
+                                </v-row>
+                            </v-col>
+                        </v-col>
+                        <v-col md="9">
+                            <v-row style="height: 50%">
+                                <v-row style="height: 20%">
+
+                                </v-row>
+                                <v-row justify="center" style="height: 80%; width: 100%; font-size: 5vw">
+                                    <v-row justify="center" style="height: 80%; width:100%">
+                                        {{ values[0] }}
+                                    </v-row>
+                                    <v-row style="height: 20%; width:100%" justify="center">
+                                        <v-btn @click="reset" elevation="0" rounded >Reset</v-btn>
+                                    </v-row>
+                                </v-row>
+                            </v-row>
+                            <v-row style="height: 50%">
+                                <v-btn rounded outlined elevation="1" v-for="key in keys" @click="check(key)" :disabled="key.disabled" :key="key" :style="{width:btnwidth}">{{key.text}}</v-btn>
+                            </v-row> 
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+        </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.4/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+        data: {
+            attempts: 0,
+            correct: [],
+            incorrect: [],
+            setdata: [],
+            deck: {},
+            selected: "",
+            keys: [],
+            btnwidth: '',
+            values: []
+        },
+      mounted: function(){
+        Vue.config.silent = true
+        const params = new URLSearchParams(document.location.search);
+        const data = params.get('code');
+        const url = `https://re-learn-server.dho6342568911.repl.co/get?code=${data}`;
+        fetch(url).then(response => {
+    return response.json()}).then(
+        data => {
+            if (data["error"] == "error"){
+                location.href="error.html"
+            }
+            this.setdata = data;
+            let tempDeck = {}
+            let vals = []
+            const deck = data["deck"]
+            const deckLength = Object.keys(deck).length
+            for(let i = 0; i < deckLength; i++){
+                let z = deck[i].id
+                let t = deck[i].value
+                tempDeck[t] = z;
+                vals.push(deck[i].value)
+            }
+            this.deck = tempDeck;
+            let keyss = Object.values(tempDeck)
+            let ky = keyss.filter((c, index) => {
+                return keyss.indexOf(c) === index;
+            });
+
+            let keysss = []
+            for (key in ky){
+                keysss.push({text: keyss[key], disabled: false})
+            }
+            this.keys = keysss
+            this.values = this.shuffle(vals)
+            let width = 100/this.keys.length
+            if (width < 10) {
+                this.btnwidth = "10%"
+            } else {
+                this.btnwidth = (100/this.keys.length).toString() + "%"
+            }
+            document.body.style.opacity = 1;
+        })
+      },
+    methods: {
+        locationChange(href){
+            location.href=href
+          },
+        shuffle: function(array) {
+            let currentIndex = array.length,  randomIndex;
+
+            // While there remain elements to shuffle.
+            while (currentIndex != 0) {
+
+                // Pick a remaining element.
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+
+                // And swap it with the current element.
+                [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
+            }
+
+            return array;
+        },
+        check: function(key){
+            this.attempts = this.attempts + 1
+            this.selected = key
+            const k = key.text
+            if (this.deck[this.values[0]] == k){
+                this.correct.push(this.values)
+                this.values.shift()
+                this.enableAllBtns()
+            } else {
+                key.disabled = true;
+            }
+
+            if (this.values.length == 0){
+                const score = `Completed. Score: ${this.correct.length} / ${this.attempts}`
+                console.log(score)
+                this.values[0] = score
+            }
+          },
+        checkAnswer: function(value, key){
+            const d = this.deck
+            for (card in d){
+                if (card.id == key && card.value == value){
+                    return true
+                }
+                return false
+            }
+        },
+        getObjKey: function (obj, value) {
+            for (ob in obj){
+            }
+            },
+          enableAllBtns: function() {
+                this.keys.forEach(function( key ) {
+                    key.disabled = false;
+                });
+            },
+            reset: function(){
+                this.enableAllBtns()
+            const deck = this.deck
+            let vals = Object.keys(deck)
+            this.values = this.shuffle(vals)
+            console.log(this.values)
+            this.correct = []
+            this.attempts = 0
+        }
+          
+        }
+      })
+  </script>
+
+  <style>
+      body {
+          opacity:0
+      }
+        a {
+            color:black !important;
+            font-family: serif;
+        }
+  </style>
+
+</body>
+
+</html>
