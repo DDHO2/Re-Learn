@@ -58,7 +58,7 @@
                                 </v-row>
                             </v-row>
                             <v-row style="height: 50%">
-                                <v-btn rounded outlined elevation="1" v-for="key in keys" @click="check(key)" :disabled="key.disabled" :key="key" :style="{width:btnwidth}">{{key.text}}</v-btn>
+                                <v-btn rounded outlined elevation="1" v-for="key in keys" @click="check(key)" :disabled="key.disabled" :key="key" :style="{width:btnwidth}" style="overflow:hidden;">{{key.text}}</v-btn>
                             </v-row> 
                         </v-col>
                     </v-row>
